@@ -8,15 +8,77 @@
 <html>
 
 <body>
-    <p id="main"> aaaaa</p>
+  <div style="width: 100px;background-color: aqua;">
+    <p id="main" style="width: 100px;text-overflow: ellipsis; 
+    overflow: nowrap"> aaaâ a aâ aâ   aa â aaa a a a a a a a a aaaa aa aaa</p>
+    </div>
+    <p id="main">aaaaa</p>
+    <p id="main">bbbsab</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
+    <p id="main">aaaaa</p>
     <p id="main">aaaaa</p>
 
-    <p id="main">bbbsab</p>
-
-    <!-- <div style="background-color:red;position: absolute;height: 100px;width: 100px;bottom: 0px;">
-        <button onclick="find('eview')" >find</button>
-        <button onclick="findNext()" >next</button>
-    </div> -->
+    </div> 
 </body>
 
 </html>
@@ -25,11 +87,16 @@
 
 
 <script>
-    // document.getElementsByTagName('body').innerHTML(<div style="background-color:red;position: absolute;height: 100px;width: 100px;">)
-    // document.getElementsByTagName("body")[0].append(<b> "Hello World!"</b>);
-    const html = '<div style="background-color:red;position: absolute;height: 100px;width: 100px;right: 0px"> <button onclick="find(`a`)" >find</button>  <button onclick="findNext()" >next</button></div>'
-    let htmlObj = document.getElementsByTagName('body')[0]; 
-    htmlObj.innerHTML = htmlObj.innerHTML + `${html}`;
+    const html = '<div ><button style="float: right" onclick="findDone()"  >close</button>  <button style="float: right"  onclick="findNext()" >next</button><button style="float: right"  onclick="findPrevious()" >pre</button><button style="float: right" id="demo" >find</button> <input id="input-find" style="float: right" /> </div>'
+    let htmlBody = document.getElementsByTagName('body')[0]; 
+    htmlBody.innerHTML = '<div id="find-in-page" style="right: 0px;z-index: 1000; background-color: red; position: fixed;"></div>'  +htmlBody.innerHTML ;
+    let htmlObj = document.getElementById('find-in-page');  
+    htmlObj.innerHTML = htmlObj.innerHTML + html;
+    function myFunction() { 
+       const value = document.getElementById("input-find").value
+       find(value)
+  }
+    document.getElementById("demo").addEventListener("click", myFunction);
 </script>
 
 <script>
@@ -62,7 +129,7 @@
     box-shadow: 0 0 0 2px ${HIGHLIGHT_COLOR};
     transition: all ${SCROLL_DURATION}ms ease ${SCROLL_DURATION}ms;
   }
-  .${HIGHLIGHT_CLASS_NAME}.${HIGHLIGHT_CLASS_NAME_ACTIVE} {
+  .${HIGHLIGHT_CLASS_NAME_ACTIVE} {
     background-color: ${HIGHLIGHT_COLOR_ACTIVE};
     box-shadow: 0 0 0 4px ${HIGHLIGHT_COLOR_ACTIVE},0 1px 3px 3px rgba(0,0,0,.75);
   }`;
@@ -85,6 +152,7 @@
     // If the trimmed query is empty, use it instead of the escaped
     // query to prevent searching for nothing but whitepsace.
     let escapedQuery = !trimmedQuery ? trimmedQuery : query.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+    console.log('escapedQuery',escapedQuery);
     if (escapedQuery === lastEscapedQuery) {
       return;
     }
@@ -118,10 +186,8 @@
       activeHighlightIndex = -1;
   
       let totalResults = highlights.length;
-      console.log('1123421323',totalResults);
-  
-      window.webkit.messageHandlers.findInPageHandler.postMessage({"securitytoken": SECURITY_TOKEN, "data": {totalResults: totalResults }});
       findNext();
+      window.webkit.messageHandlers.findInPageHandler.postMessage({"securitytoken": SECURITY_TOKEN, "data": {totalResults: totalResults }});
     });
   }
   

@@ -1,44 +1,38 @@
-export default `/* vim: set ts=2 sts=2 sw=2 et tw=80: */
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
-'use strict';
-
+`
 const MAXIMUM_HIGHLIGHT_COUNT = 500;
 const SCROLL_OFFSET_Y = 40;
 const SCROLL_DURATION = 100;
 
-const HIGHLIGHT_CLASS_NAME = '__firefox__find-highlight';
-const HIGHLIGHT_CLASS_NAME_ACTIVE = '__firefox__find-highlight-active';
+const HIGHLIGHT_CLASS_NAME = "__firefox__find-highlight";
+const HIGHLIGHT_CLASS_NAME_ACTIVE = "__firefox__find-highlight-active";
 
-const HIGHLIGHT_COLOR = '#ffde49';
-const HIGHLIGHT_COLOR_ACTIVE = '#f19750';
+const HIGHLIGHT_COLOR = "#ffde49";
+const HIGHLIGHT_COLOR_ACTIVE = "#f19750";
 
-// IMPORTANT!!!: If this CSS is ever changed, the sha256-base64
-// hash in Client/Frontend/Reader/ReaderModeHandlers.swift will
-const HIGHLIGHT_CSS = .__firefox__find-highlight {
-    color: #000;
-    background-color: '#ffde49';
-    border-radius: 1px;
-    box-shadow: 0 0 0 2px '#ffde49';
-    transition: all 100ms ease 100ms;
-  }
-  .__firefox__find-highlight.__firefox__find-highlight-active {
-    background-color: '#f19750';
-    box-shadow: 0 0 0 4px '#f19750',0 1px 3px 3px rgba(0,0,0,.75);
-  };
 
-var lastEscapedQuery = '';
+const HIGHLIGHT_CSS =
+\`".\${HIGHLIGHT_CLASS_NAME} {
+  color: #000;
+  background-color: \${HIGHLIGHT_COLOR};
+  border-radius: 1px;
+  box-shadow: 0 0 0 2px \${HIGHLIGHT_COLOR};
+  transition: all \${SCROLL_DURATION}ms ease \${SCROLL_DURATION}ms;
+}
+.\${HIGHLIGHT_CLASS_NAME}.\${HIGHLIGHT_CLASS_NAME_ACTIVE} {
+  background-color: \${HIGHLIGHT_COLOR_ACTIVE};
+  box-shadow: 0 0 0 4px \${HIGHLIGHT_COLOR_ACTIVE},0 1px 3px 3px rgba(0,0,0,.75);
+}"\`;
+
+var lastEscapedQuery = "";
 var lastFindOperation = null;
 var lastReplacements = null;
 var lastHighlights = null;
 var activeHighlightIndex = -1;
 
-var highlightSpan = document.createElement('span');
+var highlightSpan = document.createElement("span");
 highlightSpan.className = HIGHLIGHT_CLASS_NAME;
 
-var styleElement = document.createElement('style');
+var styleElement = document.createElement("style");
 styleElement.innerHTML = HIGHLIGHT_CSS;
 
 function find(query) {
@@ -46,9 +40,7 @@ function find(query) {
 
   // If the trimmed query is empty, use it instead of the escaped
   // query to prevent searching for nothing but whitepsace.
-  let escapedQuery = !trimmedQuery
-    ? trimmedQuery
-    : query.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+  let escapedQuery = !trimmedQuery ? trimmedQuery : query.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
   if (escapedQuery === lastEscapedQuery) {
     return;
   }
@@ -62,56 +54,42 @@ function find(query) {
   lastEscapedQuery = escapedQuery;
 
   if (!escapedQuery) {
-    window.webkit.messageHandlers.findInPageHandler.postMessage({
-      securitytoken: SECURITY_TOKEN,
-      data: {currentResult: 0, totalResults: 0},
-    });
+    webkit.messageHandlers.findInPageHandler.postMessage({"securitytoken": SECURITY_TOKEN, "data": {currentResult: 0, totalResults: 0 }});
     return;
   }
 
-  let queryRegExp = new RegExp('(' + escapedQuery + ')', 'gi');
+  let queryRegExp = new RegExp("(" + escapedQuery + ")", "gi");
 
-  lastFindOperation = getMatchingNodeReplacements(
-    queryRegExp,
-    function (replacements, highlights) {
-      let replacement;
-      for (let i = 0, length = replacements.length; i < length; i++) {
-        replacement = replacements[i];
+  lastFindOperation = getMatchingNodeReplacements(queryRegExp, function(replacements, highlights) {
+    let replacement;
+    for (let i = 0, length = replacements.length; i < length; i++) {
+      replacement = replacements[i];
 
-        replacement.originalNode.replaceWith(replacement.replacementFragment);
-      }
+      replacement.originalNode.replaceWith(replacement.replacementFragment);
+    }
 
-      lastFindOperation = null;
-      lastReplacements = replacements;
-      lastHighlights = highlights;
-      activeHighlightIndex = -1;
+    lastFindOperation = null;
+    lastReplacements = replacements;
+    lastHighlights = highlights;
+    activeHighlightIndex = -1;
 
-      let totalResults = highlights.length;
-      console.log('1123421323', totalResults);
+    let totalResults = highlights.length;
+    webkit.messageHandlers.findInPageHandler.postMessage({"securitytoken": SECURITY_TOKEN, "data": {totalResults: totalResults }});
 
-      window.webkit.messageHandlers.findInPageHandler.postMessage({
-        securitytoken: SECURITY_TOKEN,
-        data: {totalResults: totalResults},
-      });
-      findNext();
-    },
-  );
+    findNext();
+  });
 }
 
 function findNext() {
   if (lastHighlights) {
-    activeHighlightIndex =
-      (activeHighlightIndex + lastHighlights.length + 1) %
-      lastHighlights.length;
+    activeHighlightIndex = (activeHighlightIndex + lastHighlights.length + 1) % lastHighlights.length;
     updateActiveHighlight();
   }
 }
 
 function findPrevious() {
   if (lastHighlights) {
-    activeHighlightIndex =
-      (activeHighlightIndex + lastHighlights.length - 1) %
-      lastHighlights.length;
+    activeHighlightIndex = (activeHighlightIndex + lastHighlights.length - 1) % lastHighlights.length;
     updateActiveHighlight();
   }
 }
@@ -120,7 +98,7 @@ function findDone() {
   styleElement.remove();
   clear();
 
-  lastEscapedQuery = '';
+  lastEscapedQuery = "";
 }
 
 function clear() {
@@ -148,9 +126,7 @@ function updateActiveHighlight() {
     document.body.appendChild(styleElement);
   }
 
-  let lastActiveHighlight = document.querySelector(
-    '.' + HIGHLIGHT_CLASS_NAME_ACTIVE,
-  );
+  let lastActiveHighlight = document.querySelector("." + HIGHLIGHT_CLASS_NAME_ACTIVE);
   if (lastActiveHighlight) {
     lastActiveHighlight.className = HIGHLIGHT_CLASS_NAME;
   }
@@ -161,19 +137,12 @@ function updateActiveHighlight() {
 
   let activeHighlight = lastHighlights[activeHighlightIndex];
   if (activeHighlight) {
-    activeHighlight.className =
-      HIGHLIGHT_CLASS_NAME + ' ' + HIGHLIGHT_CLASS_NAME_ACTIVE;
+    activeHighlight.className = HIGHLIGHT_CLASS_NAME + " " + HIGHLIGHT_CLASS_NAME_ACTIVE;
     scrollToElement(activeHighlight, SCROLL_DURATION);
 
-    window.webkit.messageHandlers.findInPageHandler.postMessage({
-      securitytoken: SECURITY_TOKEN,
-      data: {currentResult: activeHighlightIndex + 1},
-    });
+    webkit.messageHandlers.findInPageHandler.postMessage({"securitytoken": SECURITY_TOKEN, "data": { currentResult: activeHighlightIndex + 1 }});
   } else {
-    window.webkit.messageHandlers.findInPageHandler.postMessage({
-      securitytoken: SECURITY_TOKEN,
-      data: {currentResult: 0},
-    });
+    webkit.messageHandlers.findInPageHandler.postMessage({"securitytoken": SECURITY_TOKEN, "data": { currentResult: 0 }});
   }
 }
 
@@ -191,33 +160,22 @@ function removeHighlight(highlight) {
 
 function asyncTextNodeWalker(iterator) {
   let operation = new Operation();
-  let walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false,
-  );
+  let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
 
-  let timeout = setTimeout(function () {
-    chunkedLoop(
-      function () {
-        return walker.nextNode();
-      },
-      function (node) {
-        if (operation.cancelled) {
-          return false;
-        }
+  let timeout = setTimeout(function() {
+    chunkedLoop(function() { return walker.nextNode(); }, function(node) {
+      if (operation.cancelled) {
+        return false;
+      }
 
-        iterator(node);
-        return true;
-      },
-      100,
-    ).then(function () {
+      iterator(node);
+      return true;
+    }, 100).then(function() {
       operation.complete();
     });
   }, 50);
 
-  operation.oncancelled = function () {
+  operation.oncancelled = function() {
     clearTimeout(timeout);
   };
 
@@ -228,7 +186,8 @@ function getMatchingNodeReplacements(regExp, callback) {
   let replacements = [];
   let highlights = [];
   let isMaximumHighlightCount = false;
-  let operation = asyncTextNodeWalker(function (originalNode) {
+
+  let operation = asyncTextNodeWalker(function(originalNode) {
     if (!isTextNodeVisible(originalNode)) {
       return;
     }
@@ -244,13 +203,8 @@ function getMatchingNodeReplacements(regExp, callback) {
 
       // Add any text before this match.
       if (match.index > 0) {
-        let leadingSubstring = originalTextContent.substring(
-          lastIndex,
-          match.index,
-        );
-        replacementFragment.appendChild(
-          document.createTextNode(leadingSubstring),
-        );
+        let leadingSubstring = originalTextContent.substring(lastIndex, match.index);
+        replacementFragment.appendChild(document.createTextNode(leadingSubstring));
       }
 
       // Add element for this match.
@@ -258,10 +212,10 @@ function getMatchingNodeReplacements(regExp, callback) {
       element.textContent = matchTextContent;
       replacementFragment.appendChild(element);
       highlights.push(element);
-      console.log('element', element);
+
       lastIndex = regExp.lastIndex;
       hasReplacement = true;
-      console.log(element);
+
       if (highlights.length > MAXIMUM_HIGHLIGHT_COUNT) {
         isMaximumHighlightCount = true;
         break;
@@ -271,29 +225,25 @@ function getMatchingNodeReplacements(regExp, callback) {
     if (hasReplacement) {
       // Add any text after the matches.
       if (lastIndex < originalTextContent.length) {
-        let trailingSubstring = originalTextContent.substring(
-          lastIndex,
-          originalTextContent.length,
-        );
-        replacementFragment.appendChild(
-          document.createTextNode(trailingSubstring),
-        );
+        let trailingSubstring = originalTextContent.substring(lastIndex, originalTextContent.length);
+        replacementFragment.appendChild(document.createTextNode(trailingSubstring));
       }
+
       replacements.push({
         originalNode: originalNode,
-        replacementFragment: replacementFragment,
+        replacementFragment: replacementFragment
       });
     }
-    console.log('replacements', replacements);
 
     if (isMaximumHighlightCount) {
       operation.cancel();
       callback(replacements, highlights);
     }
   });
+
   // Callback for if/when the text node loop completes (should
   // happen unless the maximum highlight count is reached).
-  operation.oncompleted = function () {
+  operation.oncompleted = function() {
     callback(replacements, highlights);
   };
 
@@ -301,7 +251,7 @@ function getMatchingNodeReplacements(regExp, callback) {
 }
 
 function chunkedLoop(condition, iterator, chunkSize) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     setTimeout(doChunk, 0);
 
     function doChunk() {
@@ -322,16 +272,8 @@ function chunkedLoop(condition, iterator, chunkSize) {
 function scrollToElement(element, duration) {
   let rect = element.getBoundingClientRect();
 
-  let targetX = clamp(
-    rect.left + window.scrollX - window.innerWidth / 2,
-    0,
-    document.body.scrollWidth,
-  );
-  let targetY = clamp(
-    SCROLL_OFFSET_Y + rect.top + window.scrollY - window.innerHeight / 2,
-    0,
-    document.body.scrollHeight,
-  );
+  let targetX = clamp(rect.left + window.scrollX - window.innerWidth / 2, 0, document.body.scrollWidth);
+  let targetY = clamp(SCROLL_OFFSET_Y + rect.top + window.scrollY - window.innerHeight / 2, 0, document.body.scrollHeight);
 
   let startX = window.scrollX;
   let startY = window.scrollY;
@@ -364,11 +306,7 @@ function scrollToElement(element, duration) {
 
 function isTextNodeVisible(textNode) {
   let element = textNode.parentElement;
-  return !!(
-    element.offsetWidth ||
-    element.offsetHeight ||
-    element.getClientRects().length
-  );
+  return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
 }
 
 function clamp(value, min, max) {
@@ -382,49 +320,49 @@ function Operation() {
 
 Operation.prototype.constructor = Operation;
 
-Operation.prototype.cancel = function () {
+Operation.prototype.cancel = function() {
   this.cancelled = true;
 
-  if (typeof this.oncancelled === 'function') {
+  if (typeof this.oncancelled === "function") {
     this.oncancelled();
   }
 };
 
-Operation.prototype.complete = function () {
+Operation.prototype.complete = function() {
   this.completed = true;
 
-  if (typeof this.oncompleted === 'function') {
+  if (typeof this.oncompleted === "function") {
     if (!this.cancelled) {
       this.oncompleted();
     }
   }
 };
 
-Object.defineProperty(window.__firefox__, 'find', {
+Object.defineProperty(window.__firefox__, "find", {
   enumerable: false,
   configurable: false,
   writable: false,
-  value: find,
+  value: find
 });
 
-Object.defineProperty(window.__firefox__, 'findNext', {
+Object.defineProperty(window.__firefox__, "findNext", {
   enumerable: false,
   configurable: false,
   writable: false,
-  value: findNext,
+  value: findNext
 });
 
-Object.defineProperty(window.__firefox__, 'findPrevious', {
+Object.defineProperty(window.__firefox__, "findPrevious", {
   enumerable: false,
   configurable: false,
   writable: false,
-  value: findPrevious,
+  value: findPrevious
 });
 
-Object.defineProperty(window.__firefox__, 'findDone', {
+Object.defineProperty(window.__firefox__, "findDone", {
   enumerable: false,
   configurable: false,
   writable: false,
-  value: findDone,
+  value: findDone
 });
 `
