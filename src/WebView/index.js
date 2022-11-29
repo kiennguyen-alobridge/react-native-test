@@ -18,15 +18,15 @@ const MyWeb = () => {
       <WebView
         source={{
           // uri: 'https://cse.google.co.jp/cse?cx=partner-pub-0789722191899489%3A8228794694&ie=UTF-8',
-          uri: 'https://kenh14.vn',
+          uri: 'https://drive.google.com/file/d/1EWsTiEwJ4Sy0hzxxiJHGvTejsgR0kewP/view',
           // uri: 'https://apple.com',
         }}
         // source={require('../../release_note_ios_mobile_en_darkmode.html')}
         style={{flex: 1, backgroundColor: '#DDD'}}
-        injectedJavaScript={jsCode}
-        onMessage={event =>
-          console.log('===================>', event?.nativeEvent)
-        }
+        // injectedJavaScript={jsCode}
+        // onMessage={event =>
+        //   console.log('===================>', event?.nativeEvent)
+        // }
       />
     </>
   );
