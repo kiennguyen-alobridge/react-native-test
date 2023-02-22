@@ -8,12 +8,12 @@
 
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import MyWeb from './src/WebView';
+import AddressBar from './src/AddressBar';
 
 const App = () => {
   return (
     <SafeAreaView style={styles.sectionContainer}>
-      <MyWeb />
+      <AddressBar />
     </SafeAreaView>
   );
 };
