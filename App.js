@@ -8,12 +8,12 @@
 
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import AddressBar from './src/AddressBar';
+import TreeViewApp from './src/TreeViewApp';
 
 const App = () => {
   return (
     <SafeAreaView style={styles.sectionContainer}>
-      <AddressBar />
+      <TreeViewApp />
     </SafeAreaView>
   );
 };
