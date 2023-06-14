@@ -8,12 +8,12 @@
 
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import TreeViewApp from './src/TreeViewApp';
+import DraggableFlatList from './src/DraggableFlatList';
 
 const App = () => {
   return (
     <SafeAreaView style={styles.sectionContainer}>
-      <TreeViewApp />
+      <DraggableFlatList/>
     </SafeAreaView>
   );
 };
