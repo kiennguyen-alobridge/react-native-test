@@ -7,20 +7,21 @@
  */
 
 import React from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
-import Draggable from './src/DraggableFlatList';
+import { View,StyleSheet} from 'react-native';
+import Modalize from './src/modalize';
 
 const App = () => {
   return (
-    <SafeAreaView style={styles.sectionContainer}>
-      <Draggable />
-    </SafeAreaView>
+    <View style={styles.sectionContainer}>
+      <Modalize />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   sectionContainer: {
     flex: 1,
+    paddingTop:100
   },
 });
 
